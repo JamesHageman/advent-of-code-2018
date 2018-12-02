@@ -44,11 +44,28 @@ ababab`
 	if err != nil {
 		t.Fatal(err)
 	}
-	res := day2.Part1(file)
-	if res != 5368 {
+	if res := day2.Part1(file); res != 5368 {
 		t.Fatalf("expected 5368, got %d", res)
 	}
 }
 
 func TestPart2(t *testing.T) {
+	test := `abcde
+fghij
+klmno
+pqrst
+fguij
+axcye
+wvxyz`
+	if x := day2.Part2(bytes.NewBufferString(test)); x != "fgij" {
+		t.Fatalf("expected 'fgij', got %s", x)
+	}
+
+	file, err := os.Open("./day2.txt")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if res := day2.Part2(file); res != "cvgywxqubnuaefmsljdrpfzyi" {
+		t.Fatal("wrong answer")
+	}
 }
