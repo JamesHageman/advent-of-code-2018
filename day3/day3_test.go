@@ -41,7 +41,7 @@ func TestPart2(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	res := day3.Part2(file)
-
-	t.Logf("Part 2: %d", res)
+	if res := day3.Part2(file); res != 707 {
+		t.Fatalf("wrong answer")
+	}
 }

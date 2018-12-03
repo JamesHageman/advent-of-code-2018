@@ -25,7 +25,6 @@ func scanRects(in io.Reader) map[uint]rectangle {
 		ret[id] = r
 	}
 
-	fmt.Printf("rects: %d\n", len(ret))
 	return ret
 }
 
@@ -72,13 +71,11 @@ func Part2(in io.Reader) uint {
 
 	for _, claims := range points {
 		if len(claims) > 1 {
-			for rid := range claims {
-				delete(noOverlaps, uint(rid))
+			for _, rid := range claims {
+				delete(noOverlaps, rid)
 			}
 		}
 	}
-
-	fmt.Printf("%#v\n", noOverlaps)
 
 	for rid := range noOverlaps {
 		return rid
