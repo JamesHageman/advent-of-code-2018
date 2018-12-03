@@ -23,34 +23,65 @@ func scanRects(in io.Reader) map[uint]rectangle {
 			break
 		}
 		ret[id] = r
-		//_, _ = fmt.Fscanf(in, "%s") // eat the rest of the line, ignore error
 	}
 
 	fmt.Printf("rects: %d\n", len(ret))
 	return ret
 }
 
-func Part1(in io.Reader) uint {
-	var sum uint
-	points := make(map[[2]uint]uint)
+func computeClaims(rects map[uint]rectangle) map[[2]uint][]uint {
+	points := make(map[[2]uint][]uint)
 
-	rects := scanRects(in)
-
-	for _, r := range rects {
+	for rid, r := range rects {
 		for x := r.x; x < r.x+r.width; x++ {
 			for y := r.y; y < r.y+r.height; y++ {
-				points[[2]uint{x, y}]++
+				pt := [2]uint{x, y}
+				claims := points[pt]
+				claims = append(claims, rid)
+				points[pt] = claims
 			}
 		}
 	}
 
-	for _, layers := range points {
-		if layers > 1 {
+	return points
+}
+
+func Part1(in io.Reader) uint {
+	var sum uint
+
+	rects := scanRects(in)
+	points := computeClaims(rects)
+
+	for _, claims := range points {
+		if len(claims) > 1 {
 			sum++
 		}
 	}
 	return sum
 }
 
-func Part2(in io.Reader) {
+func Part2(in io.Reader) uint {
+	noOverlaps := make(map[uint]bool)
+
+	rects := scanRects(in)
+	var points = computeClaims(rects)
+
+	for rid := range rects {
+		noOverlaps[rid] = true
+	}
+
+	for _, claims := range points {
+		if len(claims) > 1 {
+			for rid := range claims {
+				delete(noOverlaps, uint(rid))
+			}
+		}
+	}
+
+	fmt.Printf("%#v\n", noOverlaps)
+
+	for rid := range noOverlaps {
+		return rid
+	}
+	return 0
 }

@@ -28,4 +28,20 @@ func TestPart1(t *testing.T) {
 }
 
 func TestPart2(t *testing.T) {
+	test := `#1 @ 1,3: 4x4
+#2 @ 3,1: 4x4
+#3 @ 5,5: 2x2
+`
+	if x := day3.Part2(bytes.NewBufferString(test)); x != 3 {
+		t.Fatalf("expected 3, got %d", x)
+	}
+
+	file, err := os.Open("./day3.txt")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	res := day3.Part2(file)
+
+	t.Logf("Part 2: %d", res)
 }
