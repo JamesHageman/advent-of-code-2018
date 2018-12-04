@@ -107,19 +107,24 @@ func getSleepTime(schedule map[uint][][2]time.Time) (sleepTimes map[uint]int) {
 	return sleepTimes
 }
 
-func calcMostPopularMinute(sleeps [][2]time.Time) uint {
-	var minutes [60]uint
-	maxMinute := 0
-
+func calcSleepMinutes(sleeps [][2]time.Time) (minutes [60]uint) {
 	for _, nap := range sleeps {
 		for minute := nap[0].Minute(); minute < nap[1].Minute(); minute++ {
 			minutes[minute]++
-			if minutes[minute] > minutes[maxMinute] {
-				maxMinute = minute
-			}
 		}
 	}
-	return uint(maxMinute)
+	return minutes
+}
+
+func calcMostPopularMinute(minutes [60]uint) int {
+	maxMinute := 0
+
+	for minute, count := range minutes {
+		if count > minutes[maxMinute] {
+			maxMinute = minute
+		}
+	}
+	return maxMinute
 }
 
 func Part1(in io.Reader) uint {
@@ -136,8 +141,27 @@ func Part1(in io.Reader) uint {
 		}
 	}
 
-	return sleepiestGuardID * calcMostPopularMinute(schedule[sleepiestGuardID])
+	return sleepiestGuardID *
+		uint(calcMostPopularMinute(calcSleepMinutes(schedule[sleepiestGuardID])))
 }
 
-func Part2(in io.Reader) {
+func Part2(in io.Reader) uint {
+	logs := scanLogs(in)
+	schedule := buildSchedule(logs)
+
+	var maxOnMinute uint
+	var maxPerMinute uint
+	var maxGuardID uint
+
+	for guardID, guardSchedule := range schedule {
+		minutes := calcSleepMinutes(guardSchedule)
+		maxMinute := calcMostPopularMinute(minutes)
+		if minutes[maxMinute] > maxPerMinute {
+			maxOnMinute = uint(maxMinute)
+			maxPerMinute = minutes[maxMinute]
+			maxGuardID = guardID
+		}
+	}
+
+	return maxGuardID * maxOnMinute
 }
