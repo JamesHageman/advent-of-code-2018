@@ -60,7 +60,7 @@ func Part2(in io.Reader) int {
 	for ignoreCh := 'a'; ignoreCh <= 'z'; ignoreCh++ {
 		polymer := list.New()
 
-		for _, c := range scanner.Text() {
+		for _, c := range text {
 			if unicode.ToLower(c) != ignoreCh {
 				polymer.PushBack(c)
 			}
