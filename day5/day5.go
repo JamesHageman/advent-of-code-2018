@@ -4,11 +4,11 @@ import (
 	"bufio"
 	"container/list"
 	"io"
-	"strings"
+	"unicode"
 )
 
 func reacts(a, b rune) bool {
-	return strings.ToLower(string(a)) == strings.ToLower(string(b)) && a != b
+	return unicode.ToLower(a) == unicode.ToLower(b) && a != b
 }
 
 func reduce(polymer *list.List) {
@@ -61,7 +61,7 @@ func Part2(in io.Reader) int {
 		polymer := list.New()
 
 		for _, c := range scanner.Text() {
-			if strings.ToLower(string(c)) != string(ignoreCh) {
+			if unicode.ToLower(c) != ignoreCh {
 				polymer.PushBack(c)
 			}
 		}
