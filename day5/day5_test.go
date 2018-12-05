@@ -28,4 +28,20 @@ func TestPart1(t *testing.T) {
 }
 
 func TestPart2(t *testing.T) {
+	test := "dabAcCaCBAcCcaDA"
+
+	if x := day5.Part2(bytes.NewBufferString(test)); x != 4 {
+		t.Fatalf("expected 4, got %d", x)
+	}
+
+	file, err := os.Open("./day5.txt")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	res := day5.Part2(file)
+	t.Logf("Part 1: %d", res)
+	if res != 6394 {
+		t.Fatalf("wrong answer")
+	}
 }

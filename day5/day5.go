@@ -3,20 +3,12 @@ package day5
 import (
 	"bufio"
 	"container/list"
-	"fmt"
 	"io"
 	"strings"
 )
 
 func reacts(a, b rune) bool {
 	return strings.ToLower(string(a)) == strings.ToLower(string(b)) && a != b
-}
-
-func debug(polymer *list.List) {
-	for curr := polymer.Front(); curr != nil; curr = curr.Next() {
-		fmt.Printf("%s", string(curr.Value.(rune)))
-	}
-	fmt.Printf("\n")
 }
 
 func reduce(polymer *list.List) {
@@ -50,7 +42,7 @@ func Part1(in io.Reader) int {
 	polymer := list.New()
 
 	for _, c := range scanner.Text() {
-		polymer.PushBack(rune(c))
+		polymer.PushBack(c)
 	}
 
 	reduce(polymer)
@@ -58,5 +50,28 @@ func Part1(in io.Reader) int {
 	return polymer.Len()
 }
 
-func Part2(in io.Reader) {
+func Part2(in io.Reader) int {
+	scanner := bufio.NewScanner(in)
+	scanner.Scan()
+	text := scanner.Text()
+
+	minSize := len(text)
+
+	for ignoreCh := 'a'; ignoreCh <= 'z'; ignoreCh++ {
+		polymer := list.New()
+
+		for _, c := range scanner.Text() {
+			if strings.ToLower(string(c)) != string(ignoreCh) {
+				polymer.PushBack(c)
+			}
+		}
+
+		reduce(polymer)
+
+		if polymer.Len() < minSize {
+			minSize = polymer.Len()
+		}
+	}
+
+	return minSize
 }
