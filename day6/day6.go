@@ -30,11 +30,11 @@ type grid_t struct {
 }
 
 func (g *grid_t) width() int {
-	return g.bounds.bottomRight.x - g.bounds.topLeft.x
+	return g.bounds.bottomRight.x - g.bounds.topLeft.x + 1
 }
 
 func (g *grid_t) height() int {
-	return g.bounds.bottomRight.y - g.bounds.topLeft.y
+	return g.bounds.bottomRight.y - g.bounds.topLeft.y + 1
 }
 
 func newGrid(b bounds_t) (g grid_t) {
@@ -99,8 +99,8 @@ const (
 	empty  = 0
 )
 
-func flood(grid *grid_t, points []point_t) (sizes []int) {
-	sizes = make([]int, len(points))
+func flood(grid *grid_t, points []point_t) []int {
+	sizes := make([]int, len(points))
 	q := list.New()
 
 	type elem struct {
@@ -109,7 +109,14 @@ func flood(grid *grid_t, points []point_t) (sizes []int) {
 	}
 
 	for i, p := range points {
+		id := i + 1
 		q.PushBack(elem{i, p})
+		cell, err := grid.at(p)
+		if err != nil {
+			panic(fmt.Errorf("Unexpected bad point: %v", err))
+		}
+		*cell = id
+		sizes[i]++
 	}
 
 	for q.Len() > 0 {
@@ -138,7 +145,7 @@ func flood(grid *grid_t, points []point_t) (sizes []int) {
 		}
 	}
 
-	return
+	return sizes
 }
 
 func Part1(in io.Reader) int {
