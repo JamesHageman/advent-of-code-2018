@@ -6,38 +6,38 @@ import (
 	"io"
 )
 
-type point_t struct {
+type Point struct {
 	x, y int
 }
 
-func (p *point_t) adjacent() [4]point_t {
+func (p *Point) adjacent() [4]Point {
 	x, y := p.x, p.y
-	return [4]point_t{
-		point_t{x + 1, y},
-		point_t{x - 1, y},
-		point_t{x, y + 1},
-		point_t{x, y - 1},
+	return [4]Point{
+		Point{x + 1, y},
+		Point{x - 1, y},
+		Point{x, y + 1},
+		Point{x, y - 1},
 	}
 }
 
-type bounds_t struct {
-	topLeft, bottomRight point_t
+type Bounds struct {
+	topLeft, bottomRight Point
 }
 
-type grid_t struct {
-	bounds bounds_t
+type Grid struct {
+	bounds Bounds
 	buf    [][]int
 }
 
-func (g *grid_t) width() int {
+func (g *Grid) width() int {
 	return g.bounds.bottomRight.x - g.bounds.topLeft.x + 1
 }
 
-func (g *grid_t) height() int {
+func (g *Grid) height() int {
 	return g.bounds.bottomRight.y - g.bounds.topLeft.y + 1
 }
 
-func newGrid(b bounds_t) (g grid_t) {
+func newGrid(b Bounds) (g Grid) {
 	g.bounds = b
 	g.buf = make([][]int, g.width())
 	for x := range g.buf {
@@ -46,7 +46,7 @@ func newGrid(b bounds_t) (g grid_t) {
 	return
 }
 
-func (g *grid_t) at(point point_t) (*int, error) {
+func (g *Grid) at(point Point) (*int, error) {
 	_x := point.x - g.bounds.topLeft.x
 	_y := point.y - g.bounds.topLeft.y
 	if _x < 0 || _x >= len(g.buf) || _y < 0 || _y >= len(g.buf[_x]) {
@@ -55,9 +55,9 @@ func (g *grid_t) at(point point_t) (*int, error) {
 	return &g.buf[_x][_y], nil
 }
 
-func scanPoints(in io.Reader) (points []point_t) {
+func scanPoints(in io.Reader) (points []Point) {
 	for {
-		var point point_t
+		var point Point
 		_, err := fmt.Fscanf(in, "%d, %d\n", &point.x, &point.y)
 		if err != nil {
 			break
@@ -67,7 +67,7 @@ func scanPoints(in io.Reader) (points []point_t) {
 	return
 }
 
-func getBounds(points []point_t) (bounds bounds_t) {
+func getBounds(points []Point) (bounds Bounds) {
 	bounds.topLeft = points[0]
 	bounds.bottomRight = points[0]
 
@@ -90,7 +90,7 @@ func getBounds(points []point_t) (bounds bounds_t) {
 	bounds.topLeft.x--
 	bounds.topLeft.y--
 	bounds.bottomRight.x++
-	bounds.bottomRight.y--
+	bounds.bottomRight.y++
 	return
 }
 
@@ -99,13 +99,13 @@ const (
 	empty  = 0
 )
 
-func flood(grid *grid_t, points []point_t) []int {
+func flood(grid *Grid, points []Point) []int {
 	sizes := make([]int, len(points))
 	q := list.New()
 
 	type elem struct {
 		index int
-		point point_t
+		point Point
 	}
 
 	for i, p := range points {
@@ -113,7 +113,7 @@ func flood(grid *grid_t, points []point_t) []int {
 		q.PushBack(elem{i, p})
 		cell, err := grid.at(p)
 		if err != nil {
-			panic(fmt.Errorf("Unexpected bad point: %v", err))
+			panic(fmt.Errorf("input points should be in grid bounds: %v", err))
 		}
 		*cell = id
 		sizes[i]++
@@ -129,7 +129,13 @@ func flood(grid *grid_t, points []point_t) []int {
 			cell, err := grid.at(p)
 
 			if err != nil {
+				// point out of bounds, ignore
 				fmt.Printf("%v\n", err)
+				continue
+			}
+
+			if *cell == id {
+				// already occupied by me, ignore
 				continue
 			}
 
@@ -152,7 +158,9 @@ func Part1(in io.Reader) int {
 	points := scanPoints(in)
 	fmt.Printf("points: %#v\n", points)
 	bounds := getBounds(points)
+	fmt.Printf("bounds: %#v\n", bounds)
 	grid := newGrid(bounds)
+	fmt.Printf("grid: %#v\n", grid)
 	sizes := flood(&grid, points)
 	fmt.Printf("sizes: %#v\n", sizes)
 
