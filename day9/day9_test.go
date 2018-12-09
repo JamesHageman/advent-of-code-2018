@@ -13,17 +13,22 @@ func TestPart1(t *testing.T) {
 
 	for _, in := range tests {
 		numPlayers, numMarbles, highScore := in[0], in[1], in[2]
-		if res := day9.Part1(numPlayers, numPlayers); res != highScore {
+		if res := day9.Part1(numPlayers, numMarbles); res != highScore {
 			t.Errorf("numPlayers=%d numMarbles=%d. Expected %d, got %d", numPlayers, numMarbles, highScore, res)
 		}
 	}
 
 	x := day9.Part1(416, 71975)
 	t.Logf("Part 1: %d", x)
-	//if x != 41521 {
-	//	t.Fatalf("wrong answer")
-	//}
+	if x != 439341 {
+		t.Fatalf("wrong answer")
+	}
 }
 
 func TestPart2(t *testing.T) {
+	x := day9.Part2(416, 71975)
+	t.Logf("Part 2: %d", x)
+	if x != 3566801385 {
+		t.Fatalf("wrong answer")
+	}
 }

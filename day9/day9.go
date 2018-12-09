@@ -1,5 +1,7 @@
 package day9
 
+import "fmt"
+
 type Marble struct {
 	prev, next *Marble
 	value      int
@@ -10,6 +12,18 @@ func starter() (ret *Marble) {
 	ret.prev = ret
 	ret.next = ret
 	return
+}
+
+func debug(m *Marble) {
+	curr := m
+	for {
+		fmt.Printf("%d ", curr.value)
+		curr = curr.next
+		if curr == m {
+			break
+		}
+	}
+	fmt.Printf("\n")
 }
 
 func Part1(numPlayers, maxMarble int) int {
@@ -59,5 +73,5 @@ func Part1(numPlayers, maxMarble int) int {
 }
 
 func Part2(numPlayers, maxMarble int) int {
-	return 0
+	return Part1(numPlayers, maxMarble*100)
 }
